@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Visualizer</title>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="hud">
+      <div class="controls">
+        <label class="btn">Open file<input id="file" type="file" accept="audio/*" hidden /></label>
+        <button class="btn" id="mic">Mic</button>
+        <button class="btn" id="tab" title="Share a tab (e.g. Spotify web player) with 'Share tab audio' checked">Capture tab</button>
+        <form id="search"><input id="q" placeholder="Search Audius…" autocomplete="off" /></form>
+        <select id="mode"></select>
+      </div>
+      <ul id="results"></ul>
+      <div id="now"><img id="art" alt="" /><span id="title">Pick a source to start</span></div>
+      <div id="hint">1–3 switch modes · F fullscreen · H hide UI</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
