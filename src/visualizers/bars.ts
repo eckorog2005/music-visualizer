@@ -1,5 +1,5 @@
 import { css } from '../palette';
-import { logBands, type Frame, type Visualizer } from './types';
+import { logBands, perFrame, type Frame, type Visualizer } from './types';
 
 export class Bars implements Visualizer {
   readonly name = 'Spectrum bars';
@@ -19,7 +19,7 @@ export class Bars implements Visualizer {
     const [bg, c1, c2] = f.palette;
 
     // translucent fill leaves motion trails
-    ctx.fillStyle = css(bg, 0.35);
+    ctx.fillStyle = css(bg, perFrame(0.35, f.dt));
     ctx.fillRect(0, 0, W, H);
 
     logBands(f.freq, this.bands.length, this.bands);

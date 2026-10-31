@@ -1,5 +1,5 @@
 import { css } from '../palette';
-import { logBands, type Frame, type Visualizer } from './types';
+import { logBands, perFrame, type Frame, type Visualizer } from './types';
 
 export class Radial implements Visualizer {
   readonly name = 'Radial';
@@ -21,10 +21,10 @@ export class Radial implements Visualizer {
     const cy = H / 2;
     const base = Math.min(W, H) * (0.18 + f.bass * 0.06 + f.pulse * 0.03);
 
-    ctx.fillStyle = css(bg, 0.25);
+    ctx.fillStyle = css(bg, perFrame(0.25, f.dt));
     ctx.fillRect(0, 0, W, H);
 
-    this.rotation += 0.002 + f.mid * 0.01;
+    this.rotation += (0.002 + f.mid * 0.01) * f.dt * 60;
     logBands(f.freq, this.bands.length, this.bands);
 
     ctx.save();

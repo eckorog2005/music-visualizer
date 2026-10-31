@@ -9,7 +9,7 @@ import { Radial } from './visualizers/radial';
 import { Shader } from './visualizers/shader';
 import { Scope } from './visualizers/scope';
 import { Particles } from './visualizers/particles';
-import type { Visualizer } from './visualizers/types';
+import { perFrame, type Visualizer } from './visualizers/types';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -22,6 +22,7 @@ let active = 0;
 let palette: RGB[] = DEFAULT_PALETTE.map((c) => [...c] as RGB);
 let target: RGB[] = DEFAULT_PALETTE;
 let pulse = 0;
+let lastMs = 0;
 
 const stage = $<HTMLDivElement>('stage');
 const modeSelect = $<HTMLSelectElement>('mode');
@@ -132,16 +133,20 @@ window.addEventListener('keydown', (e) => {
 function frame(ms: number) {
   engine.sample();
   const { freq, wave } = engine;
-  pulse *= 0.9;
+  const dt = lastMs ? Math.min(0.1, (ms - lastMs) / 1000) : 1 / 60;
+  lastMs = ms;
+  pulse *= 1 - perFrame(0.1, dt);
   if (beats.update(freq, ms)) pulse = 1;
 
+  const ease = perFrame(0.03, dt);
   for (let i = 0; i < 3; i++)
-    for (let c = 0; c < 3; c++) palette[i][c] += (target[i][c] - palette[i][c]) * 0.03;
+    for (let c = 0; c < 3; c++) palette[i][c] += (target[i][c] - palette[i][c]) * ease;
 
   visualizers[active].render({
     freq,
     wave,
     time: ms / 1000,
+    dt,
     bass: band(freq, 0, 0.03),
     mid: band(freq, 0.03, 0.2),
     high: band(freq, 0.2, 0.6),

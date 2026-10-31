@@ -1,5 +1,5 @@
 import { css } from '../palette';
-import type { Frame, Visualizer } from './types';
+import { perFrame, type Frame, Visualizer } from './types';
 
 interface Particle {
   x: number;
@@ -16,6 +16,8 @@ export class Particles implements Visualizer {
   readonly canvas = document.createElement('canvas');
   private ctx = this.canvas.getContext('2d')!;
   private particles: Particle[] = [];
+  private spawn = 0;
+  private prevPulse = 0;
 
   resize(w: number, h: number, dpr: number) {
     this.canvas.width = w * dpr;
@@ -27,11 +29,16 @@ export class Particles implements Visualizer {
     const { width: W, height: H } = canvas;
     const [bg, c1, c2] = f.palette;
     const unit = Math.min(W, H);
+    const k = f.dt * 60;
 
-    ctx.fillStyle = css(bg, 0.3);
+    ctx.fillStyle = css(bg, perFrame(0.3, f.dt));
     ctx.fillRect(0, 0, W, H);
 
-    const burst = Math.round(f.pulse > 0.95 ? 40 : f.high * 6);
+    this.spawn += f.high * 6 * k;
+    const beat = f.pulse > this.prevPulse; // pulse only rises when a beat sets it to 1
+    this.prevPulse = f.pulse;
+    const burst = beat ? 40 : Math.floor(this.spawn);
+    this.spawn -= Math.floor(this.spawn);
     for (let i = 0; i < burst && particles.length < MAX; i++) {
       const a = Math.random() * Math.PI * 2;
       const speed = unit * (0.003 + f.bass * 0.012) * (0.5 + Math.random());
@@ -40,9 +47,9 @@ export class Particles implements Visualizer {
 
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life -= 0.01;
+      p.x += p.vx * k;
+      p.y += p.vy * k;
+      p.life -= 0.01 * k;
       if (p.life <= 0) {
         particles.splice(i, 1);
         continue;
