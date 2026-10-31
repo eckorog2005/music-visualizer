@@ -25,7 +25,11 @@ let hostPromise: Promise<string> | undefined;
 function host(): Promise<string> {
   hostPromise ??= fetch('https://api.audius.co')
     .then((r) => r.json() as Promise<{ data: string[] }>)
-    .then(({ data }) => data[Math.floor(Math.random() * data.length)]);
+    .then(({ data }) => data[Math.floor(Math.random() * data.length)])
+    .catch((err) => {
+      hostPromise = undefined; // don't cache a failed lookup
+      throw err;
+    });
   return hostPromise;
 }
 
