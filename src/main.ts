@@ -7,13 +7,15 @@ import { DEFAULT_PALETTE, paletteFromImage, type RGB } from './palette';
 import { Bars } from './visualizers/bars';
 import { Radial } from './visualizers/radial';
 import { Shader } from './visualizers/shader';
+import { Scope } from './visualizers/scope';
+import { Particles } from './visualizers/particles';
 import type { Visualizer } from './visualizers/types';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
 const engine = new AudioEngine();
 const beats = new BeatDetector();
-const visualizers: Visualizer[] = [new Shader(), new Radial(), new Bars()];
+const visualizers: Visualizer[] = [new Shader(), new Radial(), new Bars(), new Scope(), new Particles()];
 let active = 0;
 
 // palette eases toward the target so track changes cross-fade instead of snapping
