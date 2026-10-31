@@ -4,12 +4,16 @@ export interface Frame {
   freq: Uint8Array;
   wave: Uint8Array;
   time: number; // seconds
+  dt: number; // seconds since the previous frame, capped at 0.1
   bass: number; // 0–1
   mid: number;
   high: number;
   pulse: number; // 1 on a beat, decays toward 0
   palette: RGB[];
 }
+
+/** Fraction to apply this frame so that `rate` per 60Hz frame holds at any refresh rate. */
+export const perFrame = (rate: number, dt: number) => 1 - Math.pow(1 - rate, dt * 60);
 
 /** Each visualizer owns its canvas, since a canvas can hold only one context type (2D or WebGL). */
 export interface Visualizer {

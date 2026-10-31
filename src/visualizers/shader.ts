@@ -43,7 +43,6 @@ export class Shader implements Visualizer {
   private u: Record<string, WebGLUniformLocation | null> = {};
   private spec = new Uint8Array(SPEC_SIZE);
   private travel = 0;
-  private last = 0;
 
   constructor() {
     const gl = this.gl;
@@ -76,9 +75,7 @@ export class Shader implements Visualizer {
   render(f: Frame) {
     const { gl, u } = this;
     // integrate speed so bass accelerates the tunnel without making it jump
-    const dt = this.last ? Math.min(0.1, f.time - this.last) : 0;
-    this.last = f.time;
-    this.travel += dt * (0.3 + f.bass * 1.5);
+    this.travel += f.dt * (0.3 + f.bass * 1.5);
 
     const step = (f.freq.length * 0.5) / SPEC_SIZE; // lower half holds the interesting content
     for (let i = 0; i < SPEC_SIZE; i++) this.spec[i] = f.freq[Math.floor(i * step)];

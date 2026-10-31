@@ -1,5 +1,5 @@
 import { css } from '../palette';
-import type { Frame, Visualizer } from './types';
+import { perFrame, type Frame, Visualizer } from './types';
 
 export class Scope implements Visualizer {
   readonly name = 'Scope';
@@ -16,7 +16,7 @@ export class Scope implements Visualizer {
     const { width: W, height: H } = canvas;
     const [bg, c1, c2] = f.palette;
 
-    ctx.fillStyle = css(bg, 0.2);
+    ctx.fillStyle = css(bg, perFrame(0.2, f.dt));
     ctx.fillRect(0, 0, W, H);
 
     const layers = [
