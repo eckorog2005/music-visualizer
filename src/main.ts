@@ -114,13 +114,17 @@ function trackItem(t: Track): HTMLLIElement {
 
 // --- controls --------------------------------------------------------------
 
-modeSelect.addEventListener('change', () => setMode(Number(modeSelect.value)));
+modeSelect.addEventListener('change', () => {
+  setMode(Number(modeSelect.value));
+  modeSelect.blur(); // otherwise number keys keep driving the focused select as well
+});
 window.addEventListener('resize', resize);
 window.addEventListener('keydown', (e) => {
-  if (e.target instanceof HTMLInputElement) return;
-  if (e.key >= '1' && e.key <= String(visualizers.length)) setMode(Number(e.key) - 1);
-  else if (e.key === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
-  else if (e.key === 'h') document.body.classList.toggle('hide-ui');
+  if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey || e.altKey) return;
+  const key = e.key.toLowerCase();
+  if (key >= '1' && key <= String(visualizers.length)) setMode(Number(key) - 1);
+  else if (key === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  else if (key === 'h') document.body.classList.toggle('hide-ui');
 });
 
 // --- render loop -----------------------------------------------------------
@@ -128,8 +132,8 @@ window.addEventListener('keydown', (e) => {
 function frame(ms: number) {
   engine.sample();
   const { freq, wave } = engine;
-  if (beats.update(freq, ms)) pulse = 1;
   pulse *= 0.9;
+  if (beats.update(freq, ms)) pulse = 1;
 
   for (let i = 0; i < 3; i++)
     for (let c = 0; c < 3; c++) palette[i][c] += (target[i][c] - palette[i][c]) * 0.03;
